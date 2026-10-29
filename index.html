@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StickyStudio | Premium Stickers</title>
+    <!-- Google Fonts for premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-[#fafafa] text-gray-800 antialiased relative">
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed top-24 right-6 bg-gray-900 text-white px-6 py-4 rounded-2xl shadow-2xl z-[100] transform translate-x-[150%] transition-transform duration-500 ease-out flex items-center gap-3 border border-gray-700">
+        <div class="bg-green-500/20 p-1.5 rounded-full">
+            <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        </div>
+        <span class="font-medium tracking-wide">Added to cart</span>
+    </div>
+
+    <!-- CUSTOM ALERT MODAL -->
+    <div id="customAlert" class="fixed inset-0 z-[110] flex items-center justify-center hidden transition-opacity duration-300 opacity-0">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeAlert()"></div>
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full mx-4 shadow-2xl relative z-10 transform scale-95 transition-transform duration-300" id="alertBox">
+            <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+            <h3 class="text-xl font-extrabold text-gray-900 text-center mb-2">Almost there!</h3>
+            <p id="alertMessage" class="text-gray-500 text-center font-medium leading-relaxed mb-8">
+                You need to add at least 5 stickers in total to place an order.
+            </p>
+            <button onclick="closeAlert()" class="w-full bg-gray-900 hover:bg-black text-white font-bold py-3.5 rounded-xl transition-colors duration-200">
+                Got it
+            </button>
+        </div>
+    </div>
+
+    <!-- NAVBAR (Glassmorphism) -->
+    <nav class="fixed w-full top-0 z-50 glass-nav transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer group" onclick="window.scrollTo(0,0)">
+                    <div class="bg-gradient-to-tr from-red-500 to-pink-500 text-white p-2 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <span class="font-extrabold text-2xl tracking-tighter text-gray-900">Sticky<span class="text-red-500">Studio</span></span>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-10">
+                    <a href="#gallery" class="nav-link text-gray-600 hover:text-gray-900 font-semibold text-sm tracking-wide transition-colors">Gallery</a>
+                    <a href="#about" class="nav-link text-gray-600 hover:text-gray-900 font-semibold text-sm tracking-wide transition-colors">About Us</a>
+                    <a href="#contact" class="nav-link text-gray-600 hover:text-gray-900 font-semibold text-sm tracking-wide transition-colors">Contact</a>
+                </div>
+
+                <!-- Cart Button -->
+                <div class="flex items-center">
+                    <button class="cart-trigger relative bg-white hover:bg-gray-50 border border-gray-200 text-gray-800 p-2.5 rounded-full transition-all duration-300 shadow-sm hover:shadow-md group">
+                        <svg class="nav-cart-icon w-6 h-6 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                        </svg>
+                        <span class="nav-cart-count absolute -top-1 -right-1 bg-red-500 text-white text-[11px] font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-white shadow-sm transform scale-0 transition-transform duration-300 origin-center">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- GALLERY SECTION -->
+    <section id="gallery" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
+        <div class="relative z-50 flex flex-col md:flex-row justify-between items-end mb-12 gap-6 reveal">
+            <div>
+                <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">The Collection</h2>
+                <p class="text-gray-500 mt-2 font-medium">Find your perfect match.</p>
+            </div>
+            
+            <!-- Search & Filter -->
+            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                <!-- Search Bar -->
+                <div class="relative w-full sm:w-72">
+                    <svg class="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input type="text" id="searchInput" placeholder="Search by name or code..." class="w-full bg-white border border-gray-200 rounded-2xl pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all shadow-sm">
+                </div>
+                
+                <!-- Custom Premium Dropdown -->
+                <div class="relative w-full sm:w-56 custom-dropdown" id="customDropdown">
+                    <button class="w-full bg-white border border-gray-200 rounded-2xl px-5 py-3 text-sm font-semibold text-gray-700 flex justify-between items-center shadow-sm hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500/20 transition-all" onclick="toggleDropdown()">
+                        <span id="dropdownLabel">All Categories</span>
+                        <svg id="dropdownIcon" class="w-4 h-4 text-gray-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    
+                    <!-- Dropdown Menu -->
+                    <div id="dropdownMenu" class="absolute top-full left-0 w-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl z-50 opacity-0 pointer-events-none transform -translate-y-2 transition-all duration-300 overflow-hidden">
+                        <div class="py-2 max-h-64 overflow-y-auto custom-scrollbar">
+                            <button class="dropdown-option w-full text-left px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-500 transition-colors" data-value="All" onclick="selectCategory('All', 'All Categories')">All Categories</button>
+                            <button class="dropdown-option w-full text-left px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-500 transition-colors" data-value="Anime" onclick="selectCategory('Anime', 'Anime')">Anime</button>
+                            <button class="dropdown-option w-full text-left px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-500 transition-colors" data-value="Food and drinks" onclick="selectCategory('Food and drinks', 'Food & Drinks')">Food & Drinks</button>
+                            <button class="dropdown-option w-full text-left px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-500 transition-colors" data-value="Games" onclick="selectCategory('Games', 'Games')">Games</button>
+                            <button class="dropdown-option w-full text-left px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-500 transition-colors" data-value="India and desi" onclick="selectCategory('India and desi', 'India & Desi')">India & Desi</button>
+                            <button class="dropdown-option w-full text-left px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-500 transition-colors" data-value="Love" onclick="selectCategory('Love', 'Love')">Love</button>
+                            <button class="dropdown-option w-full text-left px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-500 transition-colors" data-value="Music" onclick="selectCategory('Music', 'Music')">Music</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Hidden input to store the actual filter value for JS -->
+                <input type="hidden" id="categoryFilter" value="All">
+            </div>
+        </div>
+
+        <!-- Sticker Grid -->
+        <div id="stickerGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8 pb-24">
+            <!-- Cards injected via JS -->
+        </div>
+        
+        <!-- Empty State -->
+        <div id="noResults" class="hidden text-center py-20">
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-100 mb-4">
+                <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-1">No stickers found</h3>
+            <p class="text-gray-500">Try adjusting your search or filter.</p>
+        </div>
+    </section>
+
+    <!-- ABOUT US SECTION -->
+    <section id="about" class="bg-white py-24 border-t border-gray-100">
+        <div class="max-w-3xl mx-auto px-4 text-center reveal">
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-6 tracking-tight">Our Story</h2>
+            <p class="text-lg text-gray-500 leading-relaxed font-medium">
+                Welcome to StickyStudio. We're a small independent team obsessed with creating high-quality, durable vinyl stickers. Whether you want to customize your laptop, water bottle, or journal, we believe your gear should reflect your personality. Every sticker is printed with premium ink and cut to perfection.
+            </p>
+        </div>
+    </section>
+
+    <!-- FOOTER / CONTACT -->
+    <footer id="contact" class="bg-[#0a0a0a] text-white pt-24 pb-12">
+        <div class="max-w-7xl mx-auto px-4 text-center reveal">
+            <h2 class="text-4xl font-extrabold mb-6 tracking-tight">Ready to order?</h2>
+            <p class="text-gray-400 mb-10 max-w-lg mx-auto text-lg font-medium">
+                Add at least 5 stickers to your cart, then checkout via Instagram DM. We'll handle the rest.
+            </p>
+            <a href="https://instagram.com/YOUR_INSTA_USERNAME" target="_blank" class="inline-flex items-center gap-3 bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F56040] hover:opacity-90 text-white font-bold py-4 px-8 rounded-full transition-all duration-300 transform hover:scale-105 shadow-[0_0_40px_rgba(253,29,29,0.3)]">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd"></path></svg>
+                Message us on Instagram
+            </a>
+            <div class="mt-20 pt-8 border-t border-gray-800 text-sm text-gray-500 font-medium">
+                &copy; 2024 StickyStudio. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- FLOATING CART BUTTON -->
+    <button class="cart-trigger fixed bottom-8 right-8 bg-gray-900 hover:bg-black text-white p-4 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.3)] transition-all duration-300 hover:scale-110 z-40 flex items-center justify-center group">
+        <svg class="floating-cart-icon w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+        <span class="floating-cart-count absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center border-2 border-white transform scale-0 transition-transform duration-300 origin-center">0</span>
+    </button>
+
+    <!-- CART MODAL / SIDEBAR -->
+    <div id="cartModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] hidden transition-opacity duration-300 opacity-0">
+        <div class="absolute right-0 top-0 h-full w-full md:w-[400px] bg-white shadow-2xl flex flex-col transform transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] translate-x-full" id="cartPanel">
+            <!-- Cart Header -->
+            <div class="flex justify-between items-center p-6 border-b border-gray-100">
+                <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">Your Cart</h2>
+                <button id="closeCartBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-600 p-2 rounded-full transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <!-- Cart Items List -->
+            <div id="cartItemsList" class="flex-grow overflow-y-auto p-6 space-y-4 bg-gray-50/50">
+                <!-- Items injected here -->
+            </div>
+
+            <!-- Cart Footer -->
+            <div class="p-6 border-t border-gray-100 bg-white">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-gray-500 font-semibold uppercase tracking-wider text-sm">Subtotal</span>
+                    <span id="cartTotal" class="text-3xl font-extrabold text-gray-900 tracking-tight">₹0</span>
+                </div>
+                <button id="checkoutBtn" class="w-full bg-[#0a0a0a] hover:bg-red-500 text-white font-bold py-4 rounded-2xl transition-all duration-300 shadow-lg flex justify-center items-center gap-2 group">
+                    Checkout via Instagram
+                    <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+                <p class="text-xs text-center text-gray-400 mt-4 font-medium">Minimum 5 stickers required to checkout.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+</body>
+</html>

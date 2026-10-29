@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Sticker Studio</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Smooth scrolling for anchor links */
+        html { scroll-behavior: smooth; }
+        /* Hide elements utility */
+        .hidden { display: none !important; }
+        /* Prevent body scroll when cart is open */
+        body.cart-open { overflow: hidden; }
+        
+        /* Shake Animation for Cart Icon */
+        @keyframes shake {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(15deg); }
+            50% { transform: rotate(-15deg); }
+            75% { transform: rotate(10deg); }
+            100% { transform: rotate(0deg); }
+        }
+        .animate-shake { animation: shake 0.5s ease-in-out; }
+        
+        /* Bounce Animation for Cart Badge */
+        @keyframes bounce-badge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+        }
+        .animate-badge { animation: bounce-badge 0.4s ease-in-out; }
+
+        /* Card pulse animation when added */
+        @keyframes card-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(34, 197, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+        .animate-card-pulse { animation: card-pulse 1s; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased relative">
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed top-24 right-6 bg-gray-900 text-white px-6 py-4 rounded-lg shadow-2xl z-50 transform translate-x-[150%] transition-transform duration-300 flex items-center gap-3">
+        <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <span id="toastMessage" class="font-medium">Item added to cart!</span>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav class="bg-white shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center gap-2">
+                    <span class="text-3xl">✨</span>
+                    <a href="#" class="font-bold text-2xl tracking-tight text-gray-900">StickyStudio</a>
+                </div>
+                
+                <!-- Links & Cart -->
+                <div class="flex items-center space-x-6 md:space-x-8">
+                    <!-- Navigation Links -->
+                    <a href="#gallery" class="hidden md:block text-gray-600 hover:text-red-500 font-medium transition">Gallery</a>
+                    <a href="#about" class="hidden md:block text-gray-600 hover:text-red-500 font-medium transition">About Us</a>
+                    <a href="#contact" class="hidden md:block text-gray-600 hover:text-red-500 font-medium transition">Contact Us</a>
+                    
+                    <!-- NAVBAR CART BUTTON -->
+                    <button class="cart-trigger relative text-gray-800 hover:text-red-500 transition group p-2">
+                        <svg class="nav-cart-icon w-7 h-7 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        <!-- Cart Count Badge -->
+                        <span class="nav-cart-count absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-white transform translate-x-1/4 -translate-y-1/4">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <!-- <header class="bg-gradient-to-r from-pink-50 to-purple-50 pt-20 pb-24 px-4 sm:px-6 lg:px-8 text-center">
+        <div class="max-w-3xl mx-auto">
+            <span class="inline-block py-1 px-3 rounded-full bg-red-100 text-red-600 text-sm font-semibold mb-6">
+                Now Shipping Worldwide
+            </span>
+            <h1 class="text-5xl md:text-6xl font-extrabold text-gray-900 tracking-tight mb-6">
+                Stick Your <span class="text-red-500">Vibe</span> Everywhere.
+            </h1>
+            <p class="text-lg text-gray-600 mb-10 leading-relaxed">
+                Premium quality die-cut stickers, labels, and decals for artists, brands, and businesses. Turn your designs into durable art.
+            </p>
+            <a href="#gallery" class="inline-block bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition transform hover:-translate-y-1">
+                Browse Gallery
+            </a>
+        </div>
+    </header> -->
+
+    <!-- GALLERY SECTION -->
+    <section id="gallery" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+            <h2 class="text-3xl font-bold text-gray-900">Our Stickers</h2>
+            
+            <!-- Search & Filter -->
+            <div class="flex gap-4 w-full md:w-auto">
+                <input type="text" id="searchInput" placeholder="Search by name or code..." class="border border-gray-300 rounded-lg px-4 py-2 w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-red-500">
+                <select id="categoryFilter" class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
+                    <option value="All">All Categories</option>
+                    <option value="Anime">Anime</option>
+                    <option value="Food and drinks">Food and drinks</option>
+                    <option value="Games">Games</option>
+                    <option value="India and desi">India and desi</option>
+                    <option value="Love">Love</option>
+                    <option value="Music">Music</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Sticker Grid -->
+        <div id="stickerGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-24">
+            <!-- Cards will be injected here by JavaScript -->
+        </div>
+        
+        <!-- Empty State -->
+        <div id="noResults" class="hidden text-center py-12 text-gray-500 text-lg">
+            No stickers found matching your criteria.
+        </div>
+    </section>
+
+    <!-- ABOUT US SECTION -->
+    <section id="about" class="bg-white py-20">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">About Us</h2>
+            <p class="text-lg text-gray-600 leading-relaxed">
+                Welcome to StickyStudio! We are a small independent creator passionate about making high-quality, durable vinyl stickers. Whether you want to decorate your laptop, water bottle, or journal, our stickers are made to last. We are constantly adding new designs, so keep checking back!
+            </p>
+        </div>
+    </section>
+
+    <!-- CONTACT / FOOTER SECTION -->
+    <footer id="contact" class="bg-gray-900 text-white py-16">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-6">Contact Us</h2>
+            <p class="text-gray-400 mb-8 text-lg">
+                Want to place an order or request a custom sticker? 
+                <br>Add at least 5 stickers to your cart and checkout via Instagram DM.
+            </p>
+            <a href="https://instagram.com/YOUR_INSTA_USERNAME" target="_blank" class="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-8 rounded-full transition transform hover:-translate-y-1 shadow-lg">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd"></path></svg>
+                DM on Instagram
+            </a>
+            <p class="mt-12 text-sm text-gray-500">&copy; 2024 StickyStudio. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- FLOATING CART BUTTON -->
+    <button class="cart-trigger fixed bottom-6 right-6 bg-red-500 hover:bg-red-600 text-white p-4 rounded-full shadow-2xl transition transform hover:scale-105 z-40 flex items-center justify-center">
+        <svg class="floating-cart-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+        <!-- Cart Count Badge -->
+        <span class="floating-cart-count absolute -top-2 -right-2 bg-gray-900 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center border-2 border-white">0</span>
+    </button>
+
+    <!-- CART MODAL / SIDEBAR -->
+    <div id="cartModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden transition-opacity">
+        <div class="absolute right-0 top-0 h-full w-full md:w-96 bg-white shadow-xl flex flex-col transform transition-transform duration-300 translate-x-full" id="cartPanel">
+            <!-- Cart Header -->
+            <div class="flex justify-between items-center p-6 border-b border-gray-200">
+                <h2 class="text-2xl font-bold text-gray-900">Your Cart</h2>
+                <button id="closeCartBtn" class="text-gray-500 hover:text-red-500 transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <!-- Cart Items List -->
+            <div id="cartItemsList" class="flex-grow overflow-y-auto p-6 space-y-4">
+                <!-- Items injected here -->
+            </div>
+
+            <!-- Cart Footer -->
+            <div class="p-6 border-t border-gray-200 bg-gray-50">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-lg font-bold text-gray-900">Total:</span>
+                    <span id="cartTotal" class="text-2xl font-extrabold text-red-500">₹0</span>
+                </div>
+                <button id="checkoutBtn" class="w-full bg-gray-900 hover:bg-red-500 text-white font-bold py-3 rounded-lg transition-colors duration-200">
+                    Checkout via Instagram
+                </button>
+                <p class="text-xs text-center text-gray-500 mt-3">Minimum 5 stickers required to checkout.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT: STICKER DATA & LOGIC -->
+    <script>
+        // ==========================================
+        // 1. YOUR STICKER DATA GOES HERE
+        // ==========================================
+        const stickers = [
+            {
+                name: "Astronaut Cat",
+                code: "SC-001",
+                price: 150,
+                category: "Anime",
+                image: "./images/Anime/imgi_1000_ryomen-sukuna-chibi-sticker-7910058.jpg" 
+            },
+            {
+                name: "Stay Cool Retro",
+                code: "SC-002",
+                price: 120,
+                category: "Anime",
+                image: "./images/Anime/imgi_1001_senpai-sticker-7251265.jpg"
+            },
+            {
+                name: "Pixel Diamond",
+                code: "SC-003",
+                price: 100,
+                category: "Anime",
+                image: "./images/Anime/imgi_1002_saitama-ok-sticker-7093190.jpg"
+            },
+            {
+                name: "Sushi Roll",
+                code: "SC-004",
+                price: 130,
+                category: "Food and drinks",
+                image: "./images/foods and drinks/imgi_4_fizzy-zero-sticker-8688459.jpg"
+            },
+            {
+                name: "Anime Girl",
+                code: "SC-005",
+                price: 180,
+                category: "Food and drinks",
+                image: "./images/foods and drinks/imgi_5_nimbu-mirchi-sticker-8542622.jpg"
+            },
+            {
+                name: "Anime Girl",
+                code: "SC-005",
+                price: 180,
+                category: "Food and drinks",
+                image: "./images/foods and drinks/imgi_6_herbal-liqueur-bottle-glitter-sticker-8038975.jpg"
+            },
+            {
+                name: "Anime Girl",
+                code: "SC-005",
+                price: 180,
+                category: "Games",
+                image: "./images/Games/imgi_4_that-dragon-sticker-6947850.jpg"
+            },
+            {
+                name: "Anime Girl",
+                code: "SC-005",
+                price: 180,
+                category: "Games",
+                image: "./images/Games/imgi_5_1000-aura-sticker-3943331.jpg"
+            },
+            {
+                name: "Anime Girl",
+                code: "SC-005",
+                price: 180,
+                category: "Games",
+                image: "./images/Games/imgi_6_busted-10-holographic-stickers-7558454.jpg"
+            },
+            {
+                name: "Anime Girl",
+                code: "SC-005",
+                price: 180,
+                category: "India and desi",
+                image: "./images/Games/imgi_4_that-dragon-sticker-6947850.jpg"
+            },
+            {
+                name: "Anime Girl",
+                code: "SC-005",
+                price: 180,
+                category: "India and desi",
+                image: "./images/India and desi/imgi_5_mitron-apna-apna-dekh-lo-sticker-4857334.jpg"
+            },
+            {
+                name: "Anime Girl",
+                code: "SC-005",
+                price: 180,
+                category: "Love",
+                image: "./images/India and desi/imgi_6_indian-emblem-sticker-1066202.jpg"
+            },
+            {
+                name: "Anime Girl",
+                code: "SC-005",
+                price: 180,
+                category: "Love",
+                image: "./images/Love/imgi_4_tomato-love-sticker-3196730.jpg"
+            },
+            {
+                name: "Anime Girl",
+                code: "SC-005",
+                price: 180,
+                category: "Love",
+                image: "./images/Love/imgi_5_connecting-people-sticker-4980775.jpg"
+            },
+            {
+                name: "Anime Girl",
+                code: "SC-005",
+                price: 180,
+                category: "Love",
+                image: "./images/Love/imgi_6_loveda-lasun-sticker-1967964.jpg"
+            },
+            {
+                name: "Anime Girl",
+                code: "SC-005",
+                price: 180,
+                category: "Music",
+                image: "./images/Music/imgi_4_spotify-sticker-4253465.jpg"
+            },
+            {
+                name: "Anime Girl",
+                code: "SC-005",
+                price: 180,
+                category: "Music",
+                image: "./images/Music/imgi_5_four-you-sticker-8016374.jpg"
+            },
+            {
+                name: "Anime Girl",
+                code: "SC-005",
+                price: 180,
+                category: "Music",
+                image: "./images/Music/imgi_6_the-weekend-star-boy-sticker-8946675.jpg"
+            },
+        ];
+
+        // Change this to your actual Instagram username (without the @)
+        const INSTAGRAM_USERNAME = "YOUR_INSTA_USERNAME"; 
+        const MINIMUM_CART_ITEMS = 5; 
+
+        // ==========================================
+        // 2. CART STATE MANAGEMENT
+        // ==========================================
+        let cart = JSON.parse(localStorage.getItem('stickerCart')) || [];
+
+        function saveCart() {
+            localStorage.setItem('stickerCart', JSON.stringify(cart));
+            updateCartUI();
+        }
+
+        function addToCart(code, cardElement) {
+            const existingItem = cart.find(item => item.code === code);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ code: code, quantity: 1 });
+            }
+            saveCart();
+            
+            // 1. Show Toast Message
+            showToast();
+            
+            // 2. Animate Both Carts
+            triggerCartAnimations();
+
+            // 3. Animate the specific card
+            if(cardElement) {
+                cardElement.classList.add('animate-card-pulse');
+                setTimeout(() => cardElement.classList.remove('animate-card-pulse'), 1000);
+            }
+        }
+
+        function updateQuantity(code, change) {
+            const item = cart.find(item => item.code === code);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    cart = cart.filter(i => i.code !== code);
+                }
+                saveCart();
+            }
+        }
+
+        function removeItem(code) {
+            cart = cart.filter(item => item.code !== code);
+            saveCart();
+        }
+
+        // UI HELPER FUNCTIONS
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-x-[150%]');
+            setTimeout(() => {
+                toast.classList.add('translate-x-[150%]');
+            }, 2500); 
+        }
+
+        function triggerCartAnimations() {
+            // Animating all instances of the cart icons
+            const icons = document.querySelectorAll('.nav-cart-icon, .floating-cart-icon');
+            const counts = document.querySelectorAll('.nav-cart-count, .floating-cart-count');
+            
+            icons.forEach(icon => {
+                icon.classList.remove('animate-shake');
+                void icon.offsetWidth; // Trigger reflow
+                icon.classList.add('animate-shake');
+            });
+
+            counts.forEach(badge => {
+                badge.classList.remove('animate-badge');
+                void badge.offsetWidth;
+                badge.classList.add('animate-badge');
+            });
+        }
+
+        function updateCartUI() {
+            const counts = document.querySelectorAll('.nav-cart-count, .floating-cart-count');
+            const cartItemsList = document.getElementById('cartItemsList');
+            const cartTotalEl = document.getElementById('cartTotal');
+
+            // Update Counts
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            counts.forEach(el => el.textContent = totalItems);
+
+            // Update List
+            cartItemsList.innerHTML = '';
+            let totalPrice = 0;
+
+            if (cart.length === 0) {
+                cartItemsList.innerHTML = '<p class="text-gray-500 text-center mt-10">Your cart is empty.</p>';
+            } else {
+                cart.forEach(cartItem => {
+                    const stickerData = stickers.find(s => s.code === cartItem.code);
+                    if (stickerData) {
+                        const itemTotal = stickerData.price * cartItem.quantity;
+                        totalPrice += itemTotal;
+
+                        const itemHTML = `
+                            <div class="flex items-center gap-4 bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
+                                <img src="${stickerData.image}" class="w-16 h-16 object-contain bg-gray-50 rounded" onerror="this.src='https://placehold.co/100x100?text=Err'">
+                                <div class="flex-grow">
+                                    <h4 class="font-bold text-sm text-gray-900 leading-tight">${stickerData.name}</h4>
+                                    <p class="text-xs text-red-500 font-semibold mb-1">${stickerData.code}</p>
+                                    <p class="text-sm font-bold text-gray-700">₹${stickerData.price}</p>
+                                </div>
+                                <div class="flex flex-col items-center gap-1">
+                                    <div class="flex items-center border border-gray-200 rounded-md">
+                                        <button onclick="updateQuantity('${stickerData.code}', -1)" class="px-2 py-1 text-gray-600 hover:bg-gray-100 rounded-l-md">-</button>
+                                        <span class="px-2 text-sm font-semibold">${cartItem.quantity}</span>
+                                        <button onclick="updateQuantity('${stickerData.code}', 1)" class="px-2 py-1 text-gray-600 hover:bg-gray-100 rounded-r-md">+</button>
+                                    </div>
+                                    <button onclick="removeItem('${stickerData.code}')" class="text-xs text-red-500 hover:underline">Remove</button>
+                                </div>
+                            </div>
+                        `;
+                        cartItemsList.innerHTML += itemHTML;
+                    }
+                });
+            }
+
+            // Update Total
+            cartTotalEl.textContent = `₹${totalPrice}`;
+        }
+
+        // ==========================================
+        // 3. RENDER STICKERS & SEARCH
+        // ==========================================
+        const grid = document.getElementById('stickerGrid');
+        const searchInput = document.getElementById('searchInput');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const noResults = document.getElementById('noResults');
+
+        function renderStickers() {
+            grid.innerHTML = '';
+            
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedCategory = categoryFilter.value;
+
+            const filtered = stickers.filter(sticker => {
+                const matchesSearch = sticker.name.toLowerCase().includes(searchTerm) || 
+                                      sticker.code.toLowerCase().includes(searchTerm);
+                const matchesCategory = selectedCategory === 'All' || sticker.category === selectedCategory;
+                return matchesSearch && matchesCategory;
+            });
+
+            if (filtered.length === 0) {
+                noResults.classList.remove('hidden');
+                return;
+            } else {
+                noResults.classList.add('hidden');
+            }
+
+            filtered.forEach(sticker => {
+                const inCart = cart.find(item => item.code === sticker.code);
+                const btnClass = inCart 
+                    ? "bg-green-500 hover:bg-green-600" 
+                    : "bg-gray-900 hover:bg-red-500";
+                const btnText = inCart ? "Added to Cart" : "Add to Cart";
+                const btnIcon = inCart 
+                    ? `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`
+                    : `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>`;
+
+                const card = `
+                    <div id="card-${sticker.code}" class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-gray-100 flex flex-col">
+                        <div class="h-48 w-full overflow-hidden bg-gray-100 flex items-center justify-center p-4">
+                            <img src="${sticker.image}" alt="${sticker.name}" 
+                                 class="max-h-full max-w-full object-contain drop-shadow-md" 
+                                 loading="lazy"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/400x400/f3f4f6/a1a1aa?text=Image+Missing';">
+                        </div>
+                        
+                        <div class="p-5 flex-grow flex flex-col">
+                            <span class="text-xs font-semibold text-red-500 tracking-wider uppercase mb-1">${sticker.code}</span>
+                            <h3 class="text-lg font-bold text-gray-900 leading-tight mb-2">${sticker.name}</h3>
+                            <div class="text-xl font-extrabold text-gray-800 mt-auto mb-4">₹${sticker.price}</div>
+                            
+                            <button onclick="addToCart('${sticker.code}', document.getElementById('card-${sticker.code}'))" class="w-full text-center ${btnClass} text-white font-semibold py-2.5 rounded-lg transition-colors duration-200 flex justify-center items-center gap-2">
+                                ${btnIcon}
+                                ${btnText}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += card;
+            });
+        }
+
+        // ==========================================
+        // 4. UI EVENT LISTENERS
+        // ==========================================
+        searchInput.addEventListener('input', renderStickers);
+        categoryFilter.addEventListener('change', renderStickers);
+
+        const cartModal = document.getElementById('cartModal');
+        const cartPanel = document.getElementById('cartPanel');
+        
+        function openCart() {
+            cartModal.classList.remove('hidden');
+            setTimeout(() => {
+                cartPanel.classList.remove('translate-x-full');
+            }, 10);
+            document.body.classList.add('cart-open');
+            renderStickers(); 
+        }
+
+        function closeCart() {
+            cartPanel.classList.add('translate-x-full');
+            setTimeout(() => {
+                cartModal.classList.add('hidden');
+                document.body.classList.remove('cart-open');
+            }, 300); 
+        }
+
+        // Attach event listener to BOTH cart buttons
+        document.querySelectorAll('.cart-trigger').forEach(btn => {
+            btn.addEventListener('click', openCart);
+        });
+
+        document.getElementById('closeCartBtn').addEventListener('click', closeCart);
+        
+        cartModal.addEventListener('click', (e) => {
+            if (e.target === cartModal) closeCart();
+        });
+
+        // ==========================================
+        // 5. INSTAGRAM CHECKOUT LOGIC
+        // ==========================================
+        document.getElementById('checkoutBtn').addEventListener('click', () => {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            
+            if (totalItems < MINIMUM_CART_ITEMS) {
+                alert(`You need to add at least ${MINIMUM_CART_ITEMS} stickers in total to place an order. Currently you have ${totalItems}.`);
+                return;
+            }
+
+            let message = `Hi! I want to order the following stickers:\n\n`;
+            let totalPrice = 0;
+
+            cart.forEach(cartItem => {
+                const stickerData = stickers.find(s => s.code === cartItem.code);
+                if (stickerData) {
+                    const itemTotal = stickerData.price * cartItem.quantity;
+                    totalPrice += itemTotal;
+                    message += `• ${stickerData.name} (${stickerData.code}) x${cartItem.quantity} = ₹${itemTotal}\n`;
+                }
+            });
+
+            message += `\nTotal Price: ₹${totalPrice}`;
+            message += `\n\nPlease let me know how to proceed with payment!`;
+
+            const instaLink = `https://ig.me/m/${INSTAGRAM_USERNAME}`; 
+            
+            navigator.clipboard.writeText(message).then(() => {
+                alert("Order details copied to clipboard! Pasting them in our Instagram DM.");
+                window.open(instaLink, '_blank');
+            }).catch(err => {
+                window.open(instaLink, '_blank');
+            });
+        });
+
+        // Initial Setup
+        renderStickers();
+        updateCartUI();
+    </script>
+</body>
+</html>
